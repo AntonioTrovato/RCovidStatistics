@@ -1,0 +1,84 @@
+---
+title: "RCovidStatistics"
+author: "Antonio Trovato"
+date: "2023-02-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Opening the dataset
+
+First of all I need to open my dataset
+
+```{r}
+dataset <- read.csv(file = "C:\\Users\\Utente\\Documents\\GitHub\\RCovidStatistics\\dataset\\dpc-covid19-ita-regioni-20230202.csv")
+head(dataset)
+```
+
+## Deleting useless columns
+
+Deleting useless columns from the dataset
+
+```{r}
+dataset = subset(dataset, select = -c(data,stato,codice_regione,lat,long,casi_da_sospetto_diagnostico,casi_da_screening,note,note_test,note_casi,codice_nuts_1,codice_nuts_2))
+head(dataset)
+```
+
+## Bar Graph
+
+In the following code I'll print a bar graph about the "totali_positivi" column
+
+```{r}
+barplot(dataset$totale_positivi, names=dataset$denominazione_regione, 
+        col=rainbow(length(dataset$denominazione_regione)), ylim=c(0, 50000), las=2, 
+        main="Numero positivi")
+```
+
+## Central Position Indexes
+
+Now I want to compute max, median and average
+
+```{r}
+data_totale_positivi <- data.frame("Minimo"=min(dataset$totale_positivi),
+                                   "Massimo"=max(dataset$totale_positivi),
+                                   "Media"=mean(dataset$totale_positivi),
+                                   "Mediana"=median(dataset$totale_positivi))
+print(data_totale_positivi)
+```
+
+## Ordered Bar Graph
+
+I want to show a bar graph that exposes also the central position indexes, to be sure that they are truthfully.
+
+```{r}
+barplot(dataset$totale_positivi[order(dataset$totale_positivi)], 
+        names=dataset$denominazione_regione[order(dataset$totale_positivi)], 
+        col=rainbow(length(dataset$denominazione_regione)),
+        ylim=c(0, 50000), las=2, main="Risultati positivi")
+abline(h=(data_totale_positivi$Media), lty=2, col="blue")
+abline(h=(data_totale_positivi$Mediana), lty=1, col="blue")
+```
+
