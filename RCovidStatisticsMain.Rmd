@@ -82,3 +82,134 @@ abline(h=(data_totale_positivi$Media), lty=2, col="blue")
 abline(h=(data_totale_positivi$Mediana), lty=1, col="blue")
 ```
 
+## Bar Graph About The Number Of Intensive Therapies
+
+```{r}
+data_totale_terapie_intensive <- data.frame("Minimo"=min(dataset$terapia_intensiva),
+                                   "Massimo"=max(dataset$terapia_intensiva),
+                                   "Media"=mean(dataset$terapia_intensiva),
+                                   "Mediana"=median(dataset$terapia_intensiva))
+print(data_totale_terapie_intensive)
+
+barplot(dataset$terapia_intensiva[order(dataset$terapia_intensiva)], 
+        names=dataset$denominazione_regione[order(dataset$terapia_intensiva)], 
+        col=rainbow(length(dataset$denominazione_regione)),
+        ylim=c(0, 40), las=2, main="Numero di terapie intensive")
+abline(h=(data_totale_terapie_intensive$Media), lty=2, col="blue")
+abline(h=(data_totale_terapie_intensive$Mediana), lty=1, col="blue")
+```
+
+## Bar Graph About The Number Of Hospitalized People
+
+```{r}
+data_totale_ospedalizzati <- data.frame("Minimo"=min(dataset$totale_ospedalizzati),
+                                   "Massimo"=max(dataset$totale_ospedalizzati),
+                                   "Media"=mean(dataset$totale_ospedalizzati),
+                                   "Mediana"=median(dataset$totale_ospedalizzati))
+print(data_totale_ospedalizzati)
+
+barplot(dataset$totale_ospedalizzati[order(dataset$totale_ospedalizzati)], 
+        names=dataset$denominazione_regione[order(dataset$totale_ospedalizzati)], 
+        col=rainbow(length(dataset$denominazione_regione)),
+        ylim=c(0, 700), las=2, main="Numero di persone ospedalizzate")
+abline(h=(data_totale_ospedalizzati$Media), lty=2, col="blue")
+abline(h=(data_totale_ospedalizzati$Mediana), lty=1, col="blue")
+```
+
+## Bar Graph About The Number Of Swab
+
+```{r}
+data_totale_tamponi <- data.frame("Minimo"=min(dataset$tamponi),
+                                   "Massimo"=max(dataset$amponi),
+                                   "Media"=mean(dataset$tamponi),
+                                   "Mediana"=median(dataset$tamponi))
+print(data_totale_tamponi)
+
+barplot(dataset$tamponi[order(dataset$tamponi)], 
+        names=dataset$denominazione_regione[order(dataset$tamponi)], 
+        col=rainbow(length(dataset$denominazione_regione)),
+        ylim=c(0, 50000000), las=2, main="Numero di tamponi")
+abline(h=(data_totale_tamponi$Media), lty=2, col="blue")
+abline(h=(data_totale_tamponi$Mediana), lty=1, col="blue")
+```
+
+## Bar Graph About The Number Of People That Entered The Intensive Therapy
+
+```{r}
+data_totale_ingressi_terapia_intensiva <- data.frame("Minimo"=min(dataset$ingressi_terapia_intensiva),
+                                   "Massimo"=max(dataset$ingressi_terapia_intensiva),
+                                   "Media"=mean(dataset$ingressi_terapia_intensiva),
+                                   "Mediana"=median(dataset$ingressi_terapia_intensiva))
+print(data_totale_ingressi_terapia_intensiva)
+
+barplot(dataset$ingressi_terapia_intensiva[order(dataset$ingressi_terapia_intensiva)], 
+        names=dataset$denominazione_regione[order(dataset$ingressi_terapia_intensiva)], 
+        col=rainbow(length(dataset$denominazione_regione)),
+        ylim=c(0, 5), las=2, main="Ingressi in terapia intensiva")
+abline(h=(data_totale_ingressi_terapia_intensiva$Media), lty=2, col="blue")
+abline(h=(data_totale_ingressi_terapia_intensiva$Mediana), lty=1, col="blue")
+```
+
+## Histogram Of The Total Positive Results
+
+The new graph that I want to show is an histogram, in particular, I want the histogram of the total amount of positive results.
+
+```{r}
+istogramma_totale_positivi <- function(name, camp) {
+  h_t_p <- hist(camp, freq=TRUE, main=name, col=rainbow(length(camp)), xlab="")
+  h_t_p
+}
+istogramma_totale_positivi("Istogramma del numero di risultati positivi per regione", dataset$totale_positivi)
+```
+
+
+## Boxplot About The Total Number Of Positive Results
+
+```{r}
+boxplot(dataset$totale_positivi, col="green", main="Numero di risultati positivi per regione")
+Summary<-boxplot(dataset$totale_positivi, col="green", main="Numero di risultati positivi per regione")$stats
+rownames(Summary)<-c("Min","First Quartile","Median","Third Quartile","Maximum")
+Summary
+```
+
+## Now A Boxplot "Ad Intaglio" For The Total Number Of Positive Cases
+
+```{r}
+boxplot(dataset$totale_positivi, notch=TRUE, col="green", main="Numero di risultati positivi per regione")
+```
+
+## Using The Pareto's Diagram on the total number of people in intensive Therapy
+
+```{r}
+library(qcc)
+pdat <- dataset$terapia_intensiva
+names(pdat) <- dataset$denominazione_regione
+pareto.chart(data=pdat,main="Diagramma di Pareto relativo al numero di persone in terapia intensiva")
+```
+
+## Computing The different Dispersion Indexes
+
+```{r}
+var(dataset$totale_positivi)
+sd(dataset$totale_positivi)
+cv <- sd(dataset$totale_positivi) / mean(dataset$totale_positivi) * 100
+cv
+var(dataset$terapia_intensiva)
+sd(dataset$terapia_intensiva)
+cv <- sd(dataset$terapia_intensiva) / mean(dataset$terapia_intensiva) * 100
+cv
+var(dataset$totale_ospedalizzati)
+sd(dataset$totale_ospedalizzati)
+cv <- sd(dataset$totale_ospedalizzati) / mean(dataset$totale_ospedalizzati) * 100
+cv
+var(dataset$tamponi)
+sd(dataset$tamponi)
+cv <- sd(dataset$tamponi) / mean(dataset$tamponi) * 100
+cv
+var(dataset$ingressi_terapia_intensiva)
+sd(dataset$ingressi_terapia_intensiva)
+cv <- sd(dataset$ingressi_terapia_intensiva) / mean(dataset$ingressi_terapia_intensiva) * 100
+cv
+```
+
+
