@@ -212,4 +212,185 @@ cv <- sd(dataset$ingressi_terapia_intensiva) / mean(dataset$ingressi_terapia_int
 cv
 ```
 
+## Empiric Discrete Distribution Function for Total Positive Results
+
+```{r}
+discrDistr <- function(name, camp) {
+  func <- round(cumsum(camp / length(camp)), 3)
+  plot(ecdf(func), main=name, verticals=FALSE, col="red", xlab="")
+  func
+}
+discrDistr("Funzione di distribuzione empirica discreta: numero totale di risultati positivi", dataset$totale_positivi)
+```
+
+```{r}
+skw <- function(camp) {
+  n <- length(camp)
+  m2 <- (n-1) * var(camp)/n
+  m3 <- sum((camp - mean(camp))^3) / n
+  m3 / (m2^1.5)
+}
+curt <- function(x) {
+  n <- length(x)
+  m2 <- (n-1) * var(x) / n
+  m4 <- sum((x - mean(x))^4) / n
+  m4 / m2^2 - 3
+}
+
+skw(discrDistr("Funzione di distribuzione empirica discreta: numero totale di risultati positivi", dataset$totale_positivi))
+curt(discrDistr("Funzione di distribuzione empirica discreta: numero totale di risultati positivi", dataset$totale_positivi))
+```
+
+## Time For Bivariative Statistics
+
+For now I need to show the scatterplot
+
+```{r}
+covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+pairs(~ dataset$terapia_intensiva + dataset$totale_ospedalizzati + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva, data = covid, main="Scatterplot")
+```
+
+## Bivariative plot
+
+The bivariative analysis plot btw terapia_intensiva and totale_ospedalizzati
+
+```{r}
+plot(dataset$terapia_intensiva, dataset$totale_ospedalizzati, main="totale_ospedatizzati in funzione di terapia_intensiva", xlab="Terapia_Intensiva", ylab="Totale_Ospedalizzati",
+col="red")
+abline(v=median(dataset$terapia_intensiva), lty=1, col="magenta")
+abline(v=mean(dataset$terapia_intensiva), lty=2, col="blue")
+abline(h=median(dataset$totale_ospedalizzati), lty=1, col="magenta")
+abline(h=mean(dataset$totale_ospedalizzati), lty=2, col="blue")
+legend(40, 700, c("Mediana", "Media"), pch=0, col=c("magenta", "blue"), cex=0.6)
+```
+
+## Calulating Covariance And Correlation
+
+```{r}
+cov(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+cor(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+```
+
+## Regession axe
+
+```{r}
+plot(dataset$terapia_intensiva, dataset$totale_ospedalizzati , main="totale_ospedatizzati in funzione di terapia_intensiva", xlab="Terapia_Intensiva", ylab="Totale_Ospedalizzati",
+col="red")
+abline(v=median(dataset$terapia_intensiva), lty=1, col="magenta")
+abline(v=mean(dataset$terapia_intensiva), lty=2, col="blue")
+abline(h=median(dataset$totale_ospedalizzati), lty=1, col="magenta")
+abline(h=mean(dataset$totale_ospedalizzati), lty=2, col="blue")
+abline(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva), col="green")
+legend(40, 700, c("Mediana", "Media"), pch=0, col=c("magenta", "blue"), cex=0.6)
+```
+
+## Intercept And Angular Coefficient
+
+```{r}
+beta <- sd(dataset$totale_ospedalizzati) / sd(dataset$terapia_intensiva) * cor(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+alpha <- mean(dataset$totale_ospedalizzati) - beta * mean(dataset$terapia_intensiva)
+c(alpha, beta)
+
+lm ( dataset$totale_ospedalizzati ~ dataset$terapia_intensiva)
+```
+
+## Other calculations
+
+```{r}
+stime <- fitted(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva))
+c(mean(stime),mean(dataset$totale_ospedalizzati))
+```
+
+## Stimated Value Calculation
+
+```{r}
+fitted (lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva))
+resid(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva))
+
+```
+
+## Show Resids
+
+remember x:never = ter_int, y:always = tot_osp
+
+```{r}
+segmentiVerticaliResidui <- function(x, y) {
+plot(x, y, main="Retta di regressione e residui", xlab="Terapia_Intensiva", ylab="Totale_Ospedalizzati",
+col="red")
+abline (lm(y~x), col=" blue ")
+stime <- fitted(lm(y~x))
+segments(x, stime, x, y, col="magenta")
+}
+segmentiVerticaliResidui(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+```
+
+```{r}
+valResiduiValX <- function(x,y) {
+residui <- resid ( lm ( y ~ x ) )
+plot ( x , residui , main = " Diagramma dei residui " , xlab = "Terapia_Intensiva" , ylab = "Totale_Ospedalizzati" ,
+pch =9 , col = "red ")
+abline (h =0 , col =" blue " , lty =2)
+}
+valResiduiValX(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+```
+
+```{r}
+ValResiduiStandard <- function(x,y) {
+stime <- fitted(lm(y~x))
+residui <- resid(lm(y~x))
+residuistandard <- residui/sd(residui)
+plot(stime, residuistandard, main=" Residui standard rispetto ai
+valori stimati", xlab="Valori stimati", ylab="Residui standard", pch=5, col=" red " )
+abline(h=0, col="blue", lty =2)
+}
+ValResiduiStandard(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+```
+
+## Determination Coefficient
+
+```{r}
+coefficienteDeterminazione <- function(x, y) {
+firstMethod <- (cor(x, y))^2
+secondMethod <- summary(lm(y~x))$r.square
+c(firstMethod, secondMethod)
+}
+coefficienteDeterminazione(dataset$terapia_intensiva,dataset$totale_ospedalizzati)
+```
+
+## Multiple Linear Regression
+
+```{r}
+getCovMultipla <- function() {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  cov(covid)
+}
+getCovMultipla()
+```
+
+```{r}
+getCovMultipla <- function() {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  cor(covid)
+}
+getCovMultipla()
+```
+
+```{r}
+alphaBetaMultiple <- function() {
+  lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva)
+}
+alphaBetaMultiple()
+```
+
+```{r}
+fitted(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva))
+```
+
+```{r}
+resid(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva))
+```
+
+```{r}
+summary(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva))$r.square
+```
 
