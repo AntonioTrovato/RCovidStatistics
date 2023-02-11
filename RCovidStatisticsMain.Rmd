@@ -394,3 +394,300 @@ resid(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$tota
 summary(lm(dataset$totale_ospedalizzati ~ dataset$terapia_intensiva + dataset$totale_positivi + dataset$tamponi + dataset$ingressi_terapia_intensiva))$r.square
 ```
 
+#Cluster Analysis And Distance Matrix
+
+```{r}
+getDataFrame <- function() {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getDistanza <- function() {
+  df <- getDataFrame()
+  dist(df, method="euclidean", diag=TRUE, upper=TRUE)
+}
+getDistanza()
+```
+
+## Optimized Distance Matrix
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getDistanza <- function() {
+  df <- getDataFrame()
+  dist(df, method="euclidean", diag=FALSE, upper=FALSE)
+}
+getDistanza()
+```
+
+## Gerarchical Clustering
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+legameSingolo <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze, method="single")
+  plot(cluster, hang=-1, xlab="Metodo del legame singolo")
+}
+legameSingolo()
+```
+
+## Complete Bond
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+legameCompleto <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze, method="complete")
+  plot(cluster, hang=-1, xlab="Metodo del legame completo")
+}
+legameCompleto()
+```
+
+## Average Bond
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+legameMedio <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze, method="average")
+  plot(cluster, hang=-1, xlab="Metodo del legame medio")
+}
+legameMedio()
+```
+
+## Centroid Method
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+legameCentroide <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze^2, method="centroid")
+  plot(cluster, hang=-1, xlab="Metodo del centroide")
+}
+legameCentroide()
+```
+
+## Median Method
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+legameMediana <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze^2, method="median")
+  plot(cluster, hang=-1, xlab="Metodo della mediana")
+}
+legameMediana()
+```
+
+## Analyzing The Cluster Method Obtained Dendogram
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+analisiDendrogramma <- function() {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze^2, method="centroid")
+  plot(cluster, hang=-1, xlab="Metodo del centroide")
+  axis ( side =4 , at = round (c (0 , cluster$height ) ,2) )
+  rect.hclust( cluster , k = 3, border = " green ")
+  rect.hclust( cluster , k = 2, border = " red ")
+}
+analisiDendrogramma()
+```
+
+## Inserting Individuals Into Clusters
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+df <- getDataFrame()
+distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+cluster <- hclust(distanze^2, method="centroid")
+cutree(cluster, k = 1:20)
+```
+
+## Associated Summary Metrics
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+sintesiCluster <- function(type) {
+  df <- getDataFrame()
+  distanze <- dist(df, method="euclidean", diag=TRUE, upper="TRUE")
+  cluster <- hclust(distanze^2, method="centroid")
+  taglio <- cutree(cluster, k = 3)
+  tagliolist <- list(taglio)
+  aggregate(df, tagliolist, type)
+}
+sintesiCluster(sd)
+```
+
+## Non Omogenity Metrics
+
+```{r}
+getOmogeneitaTot <- function() {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  covid = scale(covid)
+  n<-nrow(covid)
+  trHI <- (n-1) * sum(apply(covid,2,var))
+  trHI
+}
+getOmogeneitaTot()
+```
+
+## Individual Subdivision
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getNumId <- function(methodVal) {
+  df <- getDataFrame()
+  distanze <- dist(df, method = "euclidean", diag = TRUE, upper="TRUE")
+  if (methodVal == "centroid" || methodVal == "median") {
+    cluster <- hclust(distanze^2, method=methodVal)
+  } else {
+    cluster <- hclust(distanze, method=methodVal)
+  }
+  taglio <- cutree(cluster, k=3, h=NULL)
+  num <- table(taglio)
+  num
+}
+getNumId("median")
+```
+
+## Non Omogenity Metrics Pt.2
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getOmogenCluster <- function (methodVal) {
+  df <- getDataFrame()
+  distanze <- dist(df, method = "euclidean", diag = TRUE, upper="TRUE")
+  if (methodVal == "centroid" || methodVal == "median") {
+    cluster <- hclust(distanze^2, method=methodVal)
+  } else {
+    cluster <- hclust(distanze, method=methodVal)
+  }
+  taglio <- cutree(cluster, k=3, h=NULL)
+  num <- table(taglio)
+  tagliolist <- list(taglio)
+  agvar <- aggregate( df, tagliolist, var)
+  agvar[is.na(agvar)] <- 0
+  trH1 <- (num[[1]]-1)*sum(agvar[1, ])
+  trH2 <- (num[[2]]-1)*sum(agvar[2, ])
+  trH3 <- (num[[3]]-1)*sum(agvar[3, ])
+  c(trH1, trH2, trH3)
+}
+getOmogenCluster("median")
+```
+
+## Non Omogenity Index
+
+```{r}
+getIndexOmogen <- function(methodVal) {
+  trHI <- getOmogeneitaTot()
+  values <- getOmogenCluster(methodVal)
+  values[1]
+  trBetween <- trHI - (values[1] + values[2] + values[3])
+  ClusterIdx <- trBetween/trHI
+  ClusterIdx
+}
+getIndexOmogen("median")
+```
+
+## The K-means Non Gerarchical Method
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getKmeans <- function() {
+  df <- getDataFrame()
+  km <- kmeans(df, 3, iter.max=10, nstart=1)
+  km
+}
+getKmeans()
+```
+
+## String Information From K-means
+
+```{r}
+getDataFrame <- function () {
+  covid <- data.frame(dataset$terapia_intensiva,dataset$totale_ospedalizzati,dataset$totale_positivi,dataset$tamponi,dataset$ingressi_terapia_intensiva)
+  row.names(covid) <- c(dataset$denominazione_regione)
+  covid = scale(covid)
+  covid
+}
+getKmeans <- function(extra_info) {
+  df <- getDataFrame()
+  km <- kmeans(df, 3, iter.max = 10, nstart = 1)
+  if (extra_info == TRUE) {
+    str(km)
+  } else {
+    km
+  }
+}
+getKmeans(TRUE)
+```
+
