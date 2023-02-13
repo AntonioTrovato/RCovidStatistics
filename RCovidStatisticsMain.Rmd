@@ -691,3 +691,155 @@ getKmeans <- function(extra_info) {
 getKmeans(TRUE)
 ```
 
+## Part Two
+
+```{r}
+n <- 10
+p <- 0.3
+sim <- rbinom(50, n, p)
+sim
+table(sim)
+freq <- table(sim)/length(sim)
+freq
+```
+
+```{r}
+sort(freq, decreasing=FALSE)
+```
+
+```{r}
+p_stima_2 <- mean(sim[0:10])/10
+p_stima_2
+```
+
+```{r}
+n <- 10
+elemCount <- 50
+alpha <- 0.05
+zalpha <- qnorm(1 - alpha/2, mean=0, sd=1)
+medCamp <- sum(sim)/elemCount
+a2 <- n * (elemCount*n + zalpha^2)
+a1 <- -n * (2*elemCount*medCamp + zalpha^2)
+a0 <- elemCount * medCamp^2
+polyroot(c(a0, a1, a2))
+```
+
+```{r}
+testUnilateraleDestro <- function () {
+p0 <- 0.25
+alpha <- 0.05
+za <- qnorm(alpha, mean=0, sd=1)
+zos <- (medCamp - k * p0)/sqrt((k*p0*(1-p0))/n)
+c(za, zos)
+}
+```
+
+```{r}
+getIntervalli <- function () {
+  p <- numeric(4)
+  for (i in 1:4)
+    p[i]<-qbinom(0.2*i, size=10, prob=0.3)
+  p
+}
+getIntervalli()
+```
+
+```{r}
+getProbInter <- function() {
+  temp_value <- pbinom(2, size=10,prob=0.3)
+  temp_value1 <- dbinom(3, size=10, prob=0.3)
+  temp_value2 <- dbinom(4, size=10, prob=0.3)
+  temp_value3 <- pbinom(4, size=10, prob=0.3, lower.tail = FALSE)
+  c(temp_value, temp_value1, temp_value2, temp_value3)
+}
+```
+
+```{r}
+elemIntervalBin <- function() {
+  r<-5
+  a <- getIntervalliBin()
+  nint<-numeric(r)
+  nint[1] <- length( which ( sim < a [1]) )
+  nint [2] <- length ( which (( sim >= a [1]) &( sim <a[2]) ))
+  nint [3] <- length ( which (( sim >= a [2]) &( sim <a[3]) ))
+  nint [4] <- length ( which (( sim >= a [3]) &( sim <a[4]) ))
+  nint [5] <- length ( which ( sim >= a [4]) )
+  nint
+}
+```
+
+```{r}
+chiBin <- function () {
+  nint <- elemInterval()
+  chi2 <- sum ((( nint - n* val ) / sqrt ( n* val) ) ^2)
+  chi2
+}
+```
+
+```{r}
+checkchiBin <- function() {
+  r <-5
+  k <-1
+  alpha <- 0.05
+  val <- qchisq ( alpha /2, df =r -k -1)
+  val2 <- qchisq (1 - alpha /2, df =r -k -1)
+  c(val,val2)
+}
+```
+
+```{r}
+getMeanSDLength <-function() {
+  n <- length(sim)
+  m <- mean(sim)
+  d <- sd(sim)
+  c(n, m, d)
+}
+```
+
+```{r}
+getIntervalli <- function () {
+  values <- getMeanSDLength()
+  a <- numeric(4)
+  for(i in 1:4)
+    a[i] <- qnorm(0.2*i, mean=values[2], sd=values[3])
+  a
+}
+```
+
+```{r}
+elemInterval <- function() {
+  r<-5
+  a <- getIntervalli()
+  nint<-numeric(r)
+  nint[1] <- length( which ( sim < a [1]) )
+  nint [2] <- length ( which (( sim >= a [1]) &( sim <a[2]) ))
+  nint [3] <- length ( which (( sim >= a [2]) &( sim <a[3]) ))
+  nint [4] <- length ( which (( sim >= a [3]) &( sim <a[4]) ))
+  nint [5] <- length ( which ( sim >= a [4]) )
+  nint
+}
+sumElemInterval <- function () {
+  e <- elemInterval()
+  sum(e)
+}
+```
+
+```{r}
+chi <- function () {
+  nint <- elemInterval()
+  chi2 <- sum ((( nint - n* 0.2) / sqrt ( n* 0.2) ) ^2)
+  chi2
+}
+```
+
+```{r}
+checkchi <- function() {
+  r<-5
+  k<-2
+  alpha <- 0.05
+  val <- qchisq ( alpha /2, df =r -k -1)
+  val2 <- qchisq (1 - alpha /2, df =r -k -1)
+  c(val,val2)
+}
+```
+
